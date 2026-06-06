@@ -1,0 +1,100 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/fragments :: head}">
+    <title>Promotion</title>
+  </head>
+
+  <body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-4">
+      <h2 class="mb-4 text-center">
+        Creating a new promotion for the pizza: [[${promotion.getPizza()}]]
+      </h2>
+
+      <!-- th:action="@{/promotions/create}" -->
+      <form
+        id="pizza-form"
+        th:object="${promotion}"
+        th:action="${edit} ? @{/promotions/edit/{id}(id = ${promotion.id})} : @{/promotions/create}"
+        method="post"
+      >
+        <!-- qui nascondo la pizza -->
+        <input type="hidden" th:field="*{pizza}" id="linked-pizza" />
+
+        <!-- title -->
+        <div class="mb-3">
+          <label for="title" class="form-label">Title:</label>
+          <input
+            type="text"
+            id="title"
+            th:field="*{title}"
+            th:errorClass="is-invalid"
+            class="form-control"
+          />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}">
+            <ul>
+              <li
+                th:each="err : ${#fields.errors('title')}"
+                th:text="${err}"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- startDate -->
+        <div class="mb-3">
+          <label for="startDate" class="form-label">startDate:</label>
+          <input
+            type="date"
+            id="startDate"
+            th:field="*{startDate}"
+            class="form-control"
+            th:errorClass="is-invalid"
+          />
+          <div
+            class="invalid-feedback"
+            th:if="${#fields.hasErrors('startDate')}"
+          >
+            <ul>
+              <li
+                th:each="err : ${#fields.errors('startDate')}"
+                th:text="${err}"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- endDate -->
+        <div class="mb-3">
+          <label for="endDate" class="form-label">endDate:</label>
+          <input
+            type="date"
+            id="endDate"
+            th:field="*{endDate}"
+            class="form-control"
+            th:errorClass="is-invalid"
+          />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}">
+            <ul>
+              <li
+                th:each="err : ${#fields.errors('endDate')}"
+                th:text="${err}"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- submit/reset -->
+        <button type="submit" class="btn btn-primary" value="create promotion">
+          Create
+        </button>
+        <button type="reset" class="btn btn-warning" value="reset all fields">
+          Reset
+        </button>
+      </form>
+    </div>
+
+    <div th:replace="~{fragments/fragments :: scripts}"></div>
+  </body>
+</html>

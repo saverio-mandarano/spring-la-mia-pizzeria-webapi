@@ -1,0 +1,81 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/fragments :: head}">
+    <title th:text="${edit} ? 'Edit ' : 'Create '">Create-or-Edit</title>
+  </head>
+
+  <body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container mt-4">
+      <h2
+        class="mb-4 text-center"
+        th:text="${edit} ? 'Edit a new ingredient' : 'Create a new ingredient'"
+      ></h2>
+
+      <form
+        id="pizza-form"
+        th:object="${ingredient}"
+        th:action="${edit} ? @{/ingredients/edit/{id}(id = ${ingredient.id})} : @{/ingredients/create}"
+        method="post"
+      >
+        <!-- name -->
+        <div class="mb-3">
+          <label for="name" class="form-label">Name:</label>
+          <input
+            type="text"
+            id="name"
+            th:field="*{name}"
+            th:errorClass="is-invalid"
+            class="form-control"
+          />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}">
+            <ul>
+              <li
+                th:each="err : ${#fields.errors('name')}"
+                th:text="${err}"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description:</label>
+          <input
+            type="text"
+            id="description"
+            th:field="*{description}"
+            th:errorClass="is-invalid"
+            class="form-control"
+          />
+          <div
+            class="invalid-feedback"
+            th:if="${#fields.hasErrors('description')}"
+          >
+            <ul>
+              <li
+                th:each="err : ${#fields.errors('description')}"
+                th:text="${err}"
+              ></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- submit/reset -->
+        <button
+          type="submit"
+          class="btn btn-primary"
+          value="create/edit ingredient"
+        >
+          Create/Edit
+        </button>
+        <button type="reset" class="btn btn-warning" value="reset all fields">
+          Reset
+        </button>
+      </form>
+    </div>
+
+    <div th:replace="~{fragments/fragments :: scripts}"></div>
+  </body>
+</html>

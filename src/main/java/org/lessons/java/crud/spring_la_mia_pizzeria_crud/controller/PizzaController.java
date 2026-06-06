@@ -1,5 +1,6 @@
 package org.lessons.java.crud.spring_la_mia_pizzeria_crud.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.model.Pizza;
@@ -7,6 +8,7 @@ import org.lessons.java.crud.spring_la_mia_pizzeria_crud.model.Promotion;
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.repository.IngredientRepository;
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.repository.PizzaRepository;
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.repository.PromotionRepository;
+import org.lessons.java.crud.spring_la_mia_pizzeria_crud.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +27,7 @@ import jakarta.validation.Valid;
 public class PizzaController {
 
     @Autowired
-    private PizzaRepository repository;
+    private PizzaService pizzaService;
 
     @Autowired
     private IngredientRepository ingredientRepository;
@@ -36,14 +38,14 @@ public class PizzaController {
     // Read
     @GetMapping
     public String index(Model model) {
-        List<Pizza> pizze = repository.findAll();
+        List<Pizza> pizze = pizzaService.findAll();
         model.addAttribute("pizze", pizze);
         return "pizze/index";
     }
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("pizza", repository.findById(id).get());
+        model.addAttribute("pizza", pizzaService.getById(id));
         return "pizze/show";
     }
 
@@ -53,9 +55,41 @@ public class PizzaController {
         List<Pizza> pizze;
 
         if (name != null && !name.isBlank()) {
-            pizze = repository.findByNameContainingIgnoreCase(name);
+            pizze = pizzaService.findByName(name);
         } else {
-            pizze = repository.findAll();
+            pizze = pizzaService.findAll();
+        }
+
+        model.addAttribute("pizze", pizze);
+
+        return "pizze/index";
+    }
+
+    @GetMapping("/searchByPrice")
+    public String searchByPrice(@RequestParam(name = "price") BigDecimal price, Model model) {
+
+        List<Pizza> pizze;
+
+        if (price != null) {
+            pizze = pizzaService.findByPrice(price);
+        } else {
+            pizze = pizzaService.findAll();
+        }
+
+        model.addAttribute("pizze", pizze);
+
+        return "pizze/index";
+    }
+
+    @GetMapping("/searchByNameOrDescription")
+    public String searchByNameOrDescription(@RequestParam(name = "query") String query, Model model) {
+
+        List<Pizza> pizze;
+
+        if (query != null && !query.isBlank()) {
+            pizze = pizzaService.findByNameOrDescription(query);
+        } else {
+            pizze = pizzaService.findAll();
         }
 
         model.addAttribute("pizze", pizze);
@@ -78,7 +112,7 @@ public class PizzaController {
         if (bindingResult.hasErrors()) {
             return "pizze/create";
         }
-        repository.save(formPizza);
+        pizzaService.create(formPizza);
         return "redirect:/pizze";
 
     }
@@ -86,7 +120,7 @@ public class PizzaController {
     // Update
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Integer id, Model model) {
-        model.addAttribute("pizza", repository.findById(id).get());
+        model.addAttribute("pizza", pizzaService.getById(id));
         model.addAttribute("ingredients", ingredientRepository.findAll());
 
         return "pizze/edit";
@@ -100,7 +134,7 @@ public class PizzaController {
         if (bindingResult.hasErrors()) {
             return "pizze/edit";
         }
-        repository.save(formPizza);
+        pizzaService.update(formPizza);
         return "redirect:/pizze";
 
     }
@@ -108,19 +142,11 @@ public class PizzaController {
     // Delete
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Integer id) {
-        // prendere per ogni pizza le promozioni ad essa associate -> getPromotions()
-        // eliminarle dalla tabella promotions: promotionRepository.delete(promotion)
-        // a questo punto posso cancellare perchè non ho vincoli della foreign key su
-        // pizza_id
 
-        Pizza pizza = repository.findById(id).get();
-        for (Promotion promotionToDelete : pizza.getPromotions()) {
-            promotionRepository.delete(promotionToDelete);
-
-        }
-
-        // repository.deleteById(id);
-        repository.delete(pizza);
+        pizzaService.deleteById(id);
+        // oppure
+        // Pizza pizza = pizzaService.getById(id);
+        // pizzaService.delete(pizza);
 
         return "redirect:/pizze";
     }
@@ -129,7 +155,7 @@ public class PizzaController {
     public String promotion(@PathVariable Integer id, Model model) {
 
         Promotion promotion = new Promotion();
-        promotion.setPizza(repository.findById(id).get());
+        promotion.setPizza(pizzaService.getById(id));
         model.addAttribute("promotion", promotion);
 
         return "promotions/create-or-edit";

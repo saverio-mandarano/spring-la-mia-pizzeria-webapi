@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/pizze")
@@ -33,13 +36,13 @@ public class PizzaRestController {
 
     // Create
     @PostMapping
-    public Pizza store(@RequestBody Pizza pizza) {
+    public Pizza store(@Valid @RequestBody Pizza pizza) {
         return pizzaService.create(pizza);
     }
 
     // Update
-    @PostMapping("/{id}")
-    public Pizza update(@RequestBody Pizza pizza, @PathVariable Integer id) {
+    @PutMapping("/{id}")
+    public Pizza update(@Valid @RequestBody Pizza pizza, @PathVariable Integer id) {
         // prima di fare la mia creazione, qualora io NON mi trovi nella situazione in
         // cui
         // il libro effettivamente è stato popolato con un id, vado a sovrascrivere l'id

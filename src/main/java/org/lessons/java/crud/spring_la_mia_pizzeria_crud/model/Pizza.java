@@ -3,7 +3,8 @@ package org.lessons.java.crud.spring_la_mia_pizzeria_crud.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -41,6 +41,7 @@ public class Pizza {
     private String url;
 
     @OneToMany(mappedBy = "pizza")
+    @JsonManagedReference
     // @OneToMany(mappedBy = "pizza", cascade = { CascadeType.REMOVE })
     private List<Promotion> promotions;
 

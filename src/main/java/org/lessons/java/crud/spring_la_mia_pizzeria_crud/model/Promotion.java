@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,6 +44,7 @@ public class Promotion {
     private LocalDate endDate;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "pizza_id", nullable = false)
     private Pizza pizza;
 

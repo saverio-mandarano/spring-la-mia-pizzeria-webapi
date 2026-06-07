@@ -3,6 +3,7 @@ package org.lessons.java.crud.spring_la_mia_pizzeria_crud.controller;
 // import org.lessons.java.crud.spring_la_mia_pizzeria_crud.model.Pizza;
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.model.Promotion;
 import org.lessons.java.crud.spring_la_mia_pizzeria_crud.repository.PromotionRepository;
+import org.lessons.java.crud.spring_la_mia_pizzeria_crud.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class PromotionController {
 
     @Autowired
-    private PromotionRepository repository;
+    private PromotionService promotionService;
 
     @PostMapping("/create")
     public String store(@Valid @ModelAttribute("promotion") Promotion formPromotion, BindingResult bindingResult,
@@ -30,7 +31,7 @@ public class PromotionController {
             return "promotions/create-or-edit";
         }
 
-        repository.save(formPromotion);
+        promotionService.create(formPromotion);
         return "redirect:/pizze/" + formPromotion.getPizza().getId();
     }
 
@@ -38,7 +39,7 @@ public class PromotionController {
     // metodo che restituisca edit da compilare (con dati già inseriti)
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Integer id, Model model) {
-        model.addAttribute("promotion", repository.findById(id).get());
+        model.addAttribute("promotion", promotionService.getById(id));
         model.addAttribute("edit", true);
         return "promotions/create-or-edit";
     }
@@ -51,7 +52,7 @@ public class PromotionController {
         if (bindingResult.hasErrors()) {
             return "promotions/create-or-edit";
         }
-        repository.save(formPromotion);
+        promotionService.create(formPromotion);
         return "redirect:/pizze/" + formPromotion.getPizza().getId();
 
     }
